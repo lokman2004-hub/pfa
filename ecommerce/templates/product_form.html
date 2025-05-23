@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un produit</title>
+    <!-- Bootstrap 4 et 5 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #6b7280;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 800;
+        }
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), url('{% static "images/hero-bg.jpg" %}') no-repeat center;
+            background-size: cover;
+            min-height: 500px;
+        }
+        .card {
+            border-radius: 10px;
+        }
+        .form-group .form-control {
+            font-size: 1.1rem;
+        }
+    </style>
+    <!-- Styles personnalisés -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-primary fw-bold" href="{% url 'home' %}">
+            <i class="fas fa-seedling me-2"></i>djShop
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'product_list' %}">Accueil</a>
+                                        </li>
+                                    {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'products' %}">Produits</a>
+                        </li>
+                        {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="http://127.0.0.1:8000/admin/">Admin</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+            {% endif %}
+              <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_list' %}">Mes Commandes</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <form class="d-none d-lg-flex me-3" method="GET" action="">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control border-end-0" placeholder="Rechercher...">
+                        <button class="btn btn-outline-secondary border-start-0" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <a href="{% url 'panier' %}" class="btn btn-outline-dark position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if cart_items %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                        {{ cart_items }}
+                    </span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Formulaire Ajouter un Produit -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-sm-12">
+                <div class="card shadow-lg border-0 rounded">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4><i class="fas fa-box me-2"></i> Ajouter un produit</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% for field in form %}
+                                <div class="form-group mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    <div class="input-group">
+                                        {% if field.name == 'image' %}
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><i class="fas fa-upload"></i></span>
+                                            </div>
+                                        {% endif %}
+                                        {{ field }}
+                                    </div>
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-success px-5 py-2">
+                                    <i class="fas fa-save me-2"></i> Enregistrer
+                                </button>
+                                <a href="{% url 'product_list' %}" class="btn btn-outline-secondary px-5 py-2 ms-3">
+                                    <i class="fas fa-arrow-left me-2"></i> Retour
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Footer -->
+  <footer class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="text-black mb-4">
+                    <i class="fas fa-shopping-bag me-2"></i>DjShop
+                </h5>
+                <p class="text-muted">Votre boutique en ligne préférée à Ain Chok Inara</p>
+                <div class="mt-4">
+                    <a href="#" class="text-black me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-black me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-black"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="text-black mb-4">Boutique</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted">Nouveautés</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Promotions</a></li>
+                    {% for category in categories|slice:":3" %}
+                    <li class="mb-2"><a href="#" class="text-muted">{{ category.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="text-black mb-4">Informations</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted">À propos</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Contact</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Livraison</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">FAQ</a></li>
+                    <li><a href="#" class="text-muted">CGV</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h6 class="text-black mb-4">Contact</h6>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Ain Chok Inara, Casablanca</li>
+                    <li class="mb-2"><i class="fas fa-phone me-2"></i> +212 6 12 34 56 78</li>
+                    <li class="mb-2"><i class="fas fa-envelope me-2"></i> contact@djshop    Fcom</li>
+                    <li><i class="fas fa-clock me-2"></i> Lun-Sam: 9h-20h</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4 bg-secondary">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0 text-muted">&copy; {% now "Y" %} DjShop. Tous droits réservés.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <img src="{% static 'images/payment-methods.png' %}" alt="Moyens de paiement" class="img-fluid" style="max-height: 30px;">
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <!-- Custom Scripts -->
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+</html>

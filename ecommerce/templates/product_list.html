@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DjShop - Votre boutique en ligne</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #6b7280;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), url('{% static "images/hero-bg.jpg" %}') no-repeat center;
+            background-size: cover;
+            min-height: 500px;
+        }
+       
+        .navbar-brand {
+            font-weight: 800;
+        }
+        
+        /* Product Cards */
+        .product-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-img {
+            height: 200px;
+            object-fit: contain;
+            background: #f9fafb;
+            padding: 20px;
+        }
+        
+        .category-img {
+            height: 120px;
+            object-fit: contain;
+            background: #f9fafb;
+        }
+        
+        .badge-new {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        /* Testimonials */
+        .testimonial-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-primary fw-bold" href="{% url 'home' %}">
+            <i class="fas fa-seedling me-2"></i>djShop
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'product_list' %}">Accueil</a>
+                                        </li>
+                                    {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'products' %}">Produits</a>
+                        </li>
+                        {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="http://127.0.0.1:8000/admin/">Admin</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+            {% endif %}
+              <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_list' %}">Mes Commandes</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <form class="d-none d-lg-flex me-3" method="GET" action="">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control border-end-0" placeholder="Rechercher...">
+                        <button class="btn btn-outline-secondary border-start-0" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <a href="{% url 'panier' %}" class="btn btn-outline-dark position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if cart_items %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                        {{ cart_items }}
+                    </span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero d-flex align-items-center p-5 m-4 text-white" style="background-image: url('https://img.freepik.com/photos-gratuite/assortiment-elements-du-vendredi-noir_23-2149074076.jpg?semt=ais_hybrid&w=740'); background-size: cover; background-position: center; background-color: rgba(0, 0, 0, 0.5);">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Bienvenue chez djshop</h1>
+            <p class="lead mb-4">Découvrez nos produits exclusifs à des prix imbattables</p>
+            <a href="#" class="btn btn-primary btn-lg px-4 me-2">Acheter maintenant</a>
+            <a href="#" class="btn btn-outline-light btn-lg px-4">Nos collections</a>
+        </div>
+    </section>
+    
+    
+    
+
+    <!-- Catégories -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Nos Catégories</h2>
+            <div class="row g-4">
+                {% for category in categories %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card border-0 shadow-sm h-100 text-center">
+                        <div class="card-body">
+                            <h5 class="card-title mb-0">{{ category.name }}</h5>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Produits phares -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="mb-0">Nos Produits</h2>
+                <a href="#" class="btn btn-outline-primary">Voir tout</a>
+            </div>
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card h-100">
+                        {% if product.is_new %}
+                        <span class="badge bg-danger badge-new">Nouveau</span>
+                        {% endif %}
+                        <!-- Lien sur l'image pour diriger vers la page de détails -->
+                        <a href="{% url 'product_detail' product.id %}">
+                            <img src="{{ product.image.url }}" class="card-img-top product-img" alt="{{ product.name }}">
+                        </a>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                {% if product.in_stock %}
+                                <span class="badge bg-success mb-2">En stock</span>
+                                {% else %}
+                                <span class="badge bg-secondary mb-2">Rupture</span>
+                                {% endif %}
+                                <div class="text-warning">
+                                   {% comment %}  {% for i in "12345" %}
+                                    <i class="fas fa-star{% if forloop.counter > product.rating %} text-muted{% endif %}"></i>
+                                    {% endfor %} {% endcomment %}
+                                </div>
+                            </div>
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.short_description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                {% if product.discount_price %}
+                                <div>
+                                    <h5 class="mb-0 text-primary">{{ product.discount_price }} DH</h5>
+                                    <small class="text-muted"><del>{{ product.price }} DH</del></small>
+                                </div>
+                                {% else %}
+                                <h5 class="mb-0 text-primary">{{ product.price }} DH</h5>
+                                {% endif %}
+                              <!-- Boutons d'ajout au panier (pour tous les produits) -->
+                            <a href="{% url 'ajouter_au_panier' product.id %}" class="btn btn-primary btn-sm add-to-cart-btn">
+                                <i class="fas fa-cart-plus"></i> Ajouter
+                            </a>
+
+<!-- Script SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Assurez-vous que le DOM est entièrement chargé avant d'ajouter l'événement
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionner tous les boutons d'ajout au panier
+        const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+        
+        addToCartBtns.forEach(function(addToCartBtn) {
+            addToCartBtn.addEventListener('click', function(event) {
+                // Empêcher la redirection immédiate (ajout du produit)
+                event.preventDefault();
+
+                // Afficher l'alerte SweetAlert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Produit ajouté',
+                    text: 'Votre produit a bien été ajouté au panier!',
+                    showConfirmButton: false,
+                    timer: 2000 // L'alerte se ferme après 2 secondes
+                });
+
+                // Rediriger après l'alerte
+                setTimeout(function() {
+                    window.location.href = event.target.href;  // Redirige vers l'URL du panier ou une autre page
+                }, 2000); // Délai pour que l'alerte soit visible avant la redirection
+            });
+        });
+    });
+</script>
+                     
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Bannière promotion -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2 class="display-5 fw-bold mb-3">Promotions exceptionnelles</h2>
+            <p class="lead mb-4">Jusqu'à 30% de réduction sur une sélection de produits</p>
+            <a href="{% url 'product_list' %}" class="btn btn-light btn-lg px-4">Voir les offres</a>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-shopping-bag me-2"></i>djshop
+                    </h5>
+                    <p class="text-muted">Votre boutique en ligne préférée à Ain Chok Inara</p>
+                    <div class="mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <h6 class="text-white mb-4">Boutique</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted">Nouveautés</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted">Promotions</a></li>
+                        {% for category in categories|slice:":3" %}
+                        <li class="mb-2"><a href="#" class="text-muted">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <h6 class="text-white mb-4">Informations</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted">À propos</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted">Contact</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted">Livraison</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted">FAQ</a></li>
+                        <li><a href="#" class="text-muted">CGV</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h6 class="text-white mb-4">Contact</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Ain Chok Inara, Casablanca</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i> +212 6 12 34 56 78</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i> contact@djshop.com</li>
+                        <li><i class="fas fa-clock me-2"></i> Lun-Sam: 9h-20h</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-muted">&copy; {% now "Y" %} DjShop. Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <img src="{% static 'images/payment-methods.png' %}" alt="Moyens de paiement" class="img-fluid" style="max-height: 30px;">
+                </div>
+            </div>
+        </div>
+    </footer>
+<!-- Inclure SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script pour gérer les favoris
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.productId;
+                // AJAX call pour ajouter/enlever des favoris
+                fetch(`/wishlist/toggle/${productId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            this.classList.toggle('active');
+                            // Mettre à jour le compteur
+                            document.querySelector('.wishlist-count').textContent = data.wishlist_count;
+                        }
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

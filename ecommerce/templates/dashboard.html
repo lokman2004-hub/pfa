@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUTSTREE - ADMIN</title>
+    <meta name="author" content="David Grzyb">
+    <meta name="description" content="">
+
+    <!-- Tailwind -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+         @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+        .font-family-karla { font-family: karla; }
+        .bg-sidebar { background: #3d68ff; }
+        .cta-btn { color: #3d68ff; }
+        .upgrade-btn { background: #1947ee; }
+        .upgrade-btn:hover { background: #0038fd; }
+        .active-nav-link { background: #1947ee; }
+        .nav-item:hover { background: #1947ee; }
+        .account-link:hover { background: #3d68ff; }
+
+        .shadow-md {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .rounded-full {
+        border-radius: 50%;
+    }
+
+    .bg-green-200 {
+        background-color: #C6F6D5;
+    }
+
+    .bg-blue-200 {
+        background-color: #BFDBFE;
+    }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-family-karla flex">
+
+   
+  <aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
+        <div class="p-6">
+            <a href="{% url 'dashboard' %}" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Admin</a>
+            <a href="{% url 'product_create' %}" class="w-full block bg-white cta-btn font-semibold py-2 mt-5 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-300 text-center">
+                + Ajouter Produit
+            </a>
+           
+        </div>
+        <nav class="text-white text-base font-semibold pt-3">
+            <a href="{% url 'order_list' %}" class="flex items-center py-4 pl-6 nav-item opacity-75 hover:opacity-100">
+                <i class="fas fa-shopping-cart mr-3"></i> Commandes
+            </a>
+             <a href="{% url 'dashboard' %}" class="flex items-center py-4 pl-6 nav-item opacity-75 hover:opacity-100">
+                <i class="fas fa-shopping-cart mr-3"></i> Stats
+            </a>
+             <a href="{% url 'products' %}" class="flex items-center py-4 pl-6 nav-item opacity-75 hover:opacity-100 active-nav-link">
+                <i class="fas fa-box-open mr-3"></i> Produits
+            </a> 
+        </nav>
+    </aside>
+
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Desktop Header -->
+      
+
+        <!-- Mobile Header & Nav -->
+        <header x-data="{ isOpen: false }" class="w-full bg-sidebar py-5 px-6 sm:hidden">
+            <div class="flex items-center justify-between">
+                <a href="" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Admin</a>
+                <button @click="isOpen = !isOpen" class="text-white text-3xl focus:outline-none">
+                    <i x-show="!isOpen" class="fas fa-bars"></i>
+                    <i x-show="isOpen" class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Dropdown Nav -->
+          
+        </header>
+
+        <div class="w-full overflow-x-hidden border-t flex flex-col">
+            <main class="w-full flex-grow p-6 bg-gray-100">
+                <h1 class="text-3xl text-gray-800 font-bold pb-6">Dashboard</h1>
+
+                <div class="flex flex-wrap mt-6">
+                    <!-- Total des Produits -->
+                    <div class="w-full lg:w-1/2 pr-0 lg:pr-2">
+                        <p class="text-xl pb-3 flex items-center text-gray-700">
+                            <i class="fas fa-box-open mr-3 text-green-600"></i> Total des Produits
+                        </p>
+                        <div class="p-6 bg-white shadow-md rounded-lg flex justify-center items-center">
+                            <div class="flex flex-col items-center justify-center h-40 w-40 bg-green-200 rounded-full shadow-md">
+                                <p class="text-4xl font-bold text-green-700"><p class="text-4xl font-bold text-green-700">{{ total_products }}</p>
+</p>
+                                <p class="text-lg text-gray-700">Produits</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total des Catégories -->
+                    <div class="w-full lg:w-1/2 pl-0 lg:pl-2 mt-12 lg:mt-0">
+                        <p class="text-xl pb-3 flex items-center text-gray-700">
+                            <i class="fas fa-tags mr-3 text-blue-600"></i> Total des Catégories
+                        </p>
+                        <div class="p-6 bg-white shadow-md rounded-lg flex justify-center items-center">
+                            <div class="flex flex-col items-center justify-center h-40 w-40 bg-blue-200 rounded-full shadow-md">
+<p class="text-4xl font-bold text-blue-700">{{ total_categories }}</p>
+                                <p class="text-lg text-gray-700">Catégories</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+                </div>
+            </main>
+
+
+
+        </div>
+
+    </div>
+
+    <!-- AlpineJS -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <!-- ChartJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+</body>
+</html>
